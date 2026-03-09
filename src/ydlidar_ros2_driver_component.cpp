@@ -1,6 +1,8 @@
 #include "ydlidar_ros2_driver/ydlidar_ros2_driver_component.hpp"
 #include "rclcpp_components/register_node_macro.hpp"
 #include <math.h>
+#include <cmath>     
+#include <algorithm> 
 
 using namespace std::chrono_literals;
 
@@ -150,12 +152,10 @@ void YdlidarRos2DriverComponent::timer_callback() {
     scan_msg->range_min = scan.config.min_range;
     scan_msg->range_max = scan.config.max_range;
 
-    int total_size = (scan.config.max_angle - scan.config.min_angle) /
-                         scan.config.angle_increment +
-                     1;
-    int publish_size = (scan_msg->angle_max - scan_msg->angle_min) /
-                           scan.config.angle_increment +
-                       1;
+    int total_size = std::ceil((scan.config.max_angle - scan.config.min_angle) /
+                               scan.config.angle_increment) + 1;
+    int publish_size = std::ceil((scan_msg->angle_max - scan_msg->angle_min) /
+                                 scan.config.angle_increment) + 1;
 
     RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 2000,
                          "[YDLIDAR FOV] Data Size: Original=%d -> Published=%d",
@@ -173,8 +173,10 @@ void YdlidarRos2DriverComponent::timer_callback() {
 
         if (point_angle >= scan_msg->angle_min &&
             point_angle <= scan_msg->angle_max) {
-          int index = std::ceil((point_angle - scan_msg->angle_min) /
-                                scan.config.angle_increment);
+            
+          int index = std::round((point_angle - scan_msg->angle_min) /
+                                 scan.config.angle_increment);
+                                 
           if (index >= 0 && index < publish_size) {
             if (point_range >= scan.config.min_range &&
                 point_range <= scan.config.max_range) {
