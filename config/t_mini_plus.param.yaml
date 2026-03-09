@@ -7,5 +7,6 @@ ydlidar_ros2_driver_node:
     # 例: -90度から90度の範囲に制限する場合は以下を使用します
     # angle_min: -1.5707963
     # angle_max:  1.5707963
-    angle_min: -3.1415926
-    angle_max:  3.1415926
+    # -135 ~ 135
+    angle_min: -2.343
+    angle_max:  2.343

@@ -157,6 +157,10 @@ void YdlidarRos2DriverComponent::timer_callback() {
                            scan.config.angle_increment +
                        1;
 
+    RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 2000,
+                         "[YDLIDAR FOV] Data Size: Original=%d -> Published=%d",
+                         total_size, publish_size);
+
     if (publish_size > 0) {
       scan_msg->ranges.resize(publish_size,
                               std::numeric_limits<float>::infinity());
