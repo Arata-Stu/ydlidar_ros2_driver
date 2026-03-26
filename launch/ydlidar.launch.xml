@@ -1,10 +1,7 @@
 <launch>
   <arg name="ydlidar_config" default="$(find-pkg-share ydlidar_ros2_driver)/config/t_mini_plus.param.yaml"/>
-  <arg name="tf_config" default="$(find-pkg-share ydlidar_ros2_driver)/config/t_mini_plus_tf.param.yaml"/>
 
   <node name="ydlidar_ros2_driver_node" pkg="ydlidar_ros2_driver" exec="ydlidar_ros2_driver_node" output="screen" respawn="false">
     <param from="$(var ydlidar_config)"/>
   </node>
-  
-  <node pkg="tf2_ros" exec="static_transform_publisher" name="base_link_to_laser" output="screen" args="0 0 0.0 0 0 0 base_link laser" />
 </launch>
