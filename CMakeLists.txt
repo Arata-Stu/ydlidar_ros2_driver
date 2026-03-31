@@ -8,6 +8,7 @@ endif()
 # find dependencies
 find_package(ament_cmake_auto REQUIRED)
 find_package(ydlidar_sdk REQUIRED)
+find_package(rclcpp_components REQUIRED)
 
 ament_auto_find_build_dependencies()
 
@@ -21,17 +22,16 @@ ament_auto_add_library(ydlidar_ros2_driver_component SHARED
 
 target_link_libraries(ydlidar_ros2_driver_component ydlidar_sdk)
 
-rclcpp_components_register_node(ydlidar_ros2_driver_component
-  PLUGIN "ydlidar_ros2_driver::YdlidarRos2DriverComponent"
-  EXECUTABLE ydlidar_ros2_driver_node
+rclcpp_components_register_nodes(ydlidar_ros2_driver_component
+  "ydlidar_ros2_driver::YdlidarRos2DriverComponent"
 )
 
 # 2. Standalone Node Executable
-ament_auto_add_executable(ydlidar_ros2_driver_node_standalone
+ament_auto_add_executable(ydlidar_ros2_driver_node
   src/ydlidar_ros2_driver_node.cpp
 )
 
-target_link_libraries(ydlidar_ros2_driver_node_standalone ydlidar_ros2_driver_component)
+target_link_libraries(ydlidar_ros2_driver_node ydlidar_ros2_driver_component)
 
 ament_auto_package(INSTALL_TO_SHARE
   config
