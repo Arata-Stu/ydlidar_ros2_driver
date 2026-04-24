@@ -11,7 +11,7 @@
 
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
-  <depend>ydlidar_sdk</depend>
+  <!-- <depend>ydlidar_sdk</depend> -->
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>std_srvs</depend>
