@@ -48,6 +48,7 @@ private:
   float angle_min_limit_;
   float angle_max_limit_;
   float rotate_angle_;
+  bool publish_point_cloud_;
 };
 
 }  // namespace ydlidar_ros2_driver

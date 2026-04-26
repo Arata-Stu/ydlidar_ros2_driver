@@ -29,6 +29,8 @@ YdlidarRos2DriverComponent::YdlidarRos2DriverComponent(
   angle_min_limit_ = this->declare_parameter<float>("angle_min", -M_PI);
   angle_max_limit_ = this->declare_parameter<float>("angle_max", M_PI);
   rotate_angle_ = this->declare_parameter<float>("rotate_angle", 0.0f);
+  publish_point_cloud_ =
+      this->declare_parameter<bool>("publish_point_cloud", true);
 
   // --- Tmini Plus Hardcoded Parameters ---
   std::string ignore_array = "";
@@ -95,8 +97,13 @@ YdlidarRos2DriverComponent::YdlidarRos2DriverComponent(
 
   laser_pub_ = this->create_publisher<sensor_msgs::msg::LaserScan>(
       "scan", rclcpp::SensorDataQoS());
-  point_cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
-      "point_cloud", rclcpp::SensorDataQoS());
+  if (publish_point_cloud_) {
+    point_cloud_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+        "point_cloud", rclcpp::SensorDataQoS());
+  }
+
+  RCLCPP_INFO(this->get_logger(), "point_cloud publishing: %s",
+              publish_point_cloud_ ? "enabled" : "disabled");
 
   stop_service_ = this->create_service<std_srvs::srv::Empty>(
       "stop_scan", std::bind(&YdlidarRos2DriverComponent::stop_scan_callback,
@@ -284,11 +291,13 @@ void YdlidarRos2DriverComponent::timer_callback() {
         }
       }
 
-      auto point_cloud_msg = create_point_cloud_message(
-          scan, scan_msg->header, scan_msg->angle_min, scan_msg->angle_max);
+      if (publish_point_cloud_ && point_cloud_pub_) {
+        auto point_cloud_msg = create_point_cloud_message(
+            scan, scan_msg->header, scan_msg->angle_min, scan_msg->angle_max);
+        point_cloud_pub_->publish(point_cloud_msg);
+      }
 
       laser_pub_->publish(std::move(scan_msg));
-      point_cloud_pub_->publish(point_cloud_msg);
     }
   } else {
     RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
